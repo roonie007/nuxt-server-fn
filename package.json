@@ -58,7 +58,6 @@
     "bumpp": "^9.4.0",
     "eslint": "^8.57.0",
     "nuxt": "^3.11.1",
-    "nuxt-server-fn": "workspace:*",
     "typescript": "^5.4.3"
   }
 }
