@@ -1,0 +1,5 @@
+{
+  "name": "nuxt-server-fn",
+  "configKey": "serverFn",
+  "version": "0.3.4"
+}
