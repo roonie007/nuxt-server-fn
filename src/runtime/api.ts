@@ -1,5 +1,5 @@
 import type { EventHandler } from 'h3'
-import { eventHandler, readBody } from 'h3'
+import { createError, eventHandler, isError, readBody } from 'h3'
 import { getQuery } from 'ufo'
 
 export function createServerFnAPI<T>(functions: T): EventHandler<T> {
@@ -23,7 +23,22 @@ export function createServerFnAPI<T>(functions: T): EventHandler<T> {
       return
     }
 
-    const result = await functions[name].apply(event, args)
-    return result
+    try {
+      const result = await functions[name].apply(event, args)
+      return result
+    } catch (error) {
+      if(isError(error)) {
+        const {stack,...rest} = error;
+
+        event.node.res.statusCode = rest.statusCode || 500
+        if(!rest.message) {
+          rest.message = rest.data?.message || rest.cause?.message ||  ''
+        }
+
+        return rest
+      }
+
+      throw error
+    }
   })
 }
