@@ -7,6 +7,11 @@ export interface ModuleOptions {
    * @default '/api/__server_fn__'
    */
   apiRoute?: string
+
+  /**
+   * @default ['server/functions']
+   */
+  dirs?: string[]
 }
 
 export default defineNuxtModule<ModuleOptions>({
@@ -16,16 +21,15 @@ export default defineNuxtModule<ModuleOptions>({
   },
   defaults: {
     apiRoute: '/api/__server_fn__',
+    dirs: ['server/functions'],
   },
   async setup(options, nuxt) {
     const {
       apiRoute,
+      dirs: _dirs,
     } = options
     const extGlob = '*.{ts,js}'
-    const dirs = [
-      // TODO: read from extends
-      join(nuxt.options.rootDir, 'server/functions'),
-    ]
+    const dirs = _dirs!.map(dir => resolve(nuxt.options.rootDir, dir))
     const clientPath = join(nuxt.options.buildDir, 'server-fn-client.ts')
     const handlerPath = join(nuxt.options.buildDir, 'server-fn-handler.ts')
 
@@ -102,9 +106,9 @@ export default createServerFnAPI(Object.assign({}, ${files.map((_, idx) => `func
       files.length = 0
       files.push(...new Set(
         (await Promise.all(
-          dirs.map(dir => fg(extGlob, { cwd: dir, absolute: true, onlyFiles: true })),
+          dirs.map( dir => fg(extGlob, { cwd: dir, absolute: true, onlyFiles: true })),
         )
-        ).flat(),
+        ).flat().map(file => join('../',file.replace(nuxt.options.rootDir,'') ))
       ))
       return files
     }
