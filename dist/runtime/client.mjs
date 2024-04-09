@@ -19,7 +19,8 @@ export function createServerFunctions(route) {
             body: {
               name,
               args
-            }
+            },
+            ...options.fetchOptions || {}
           });
         };
       }
@@ -35,7 +36,7 @@ export function createServerFunctions(route) {
             return payloadCache[key];
           if (promiseMap.has(key))
             return promiseMap.get(key);
-          const request = $fetch(route, { method: "POST", body }).then((r) => {
+          const request = $fetch(route, { method: "POST", body, ...options.fetchOptions || {} }).then((r) => {
             payloadCache[key] = r;
             promiseMap.delete(key);
             return r;

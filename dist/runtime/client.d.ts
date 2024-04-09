@@ -1,3 +1,4 @@
+import { FetchOptions } from "ofetch";
 export type ArgumentsType<T> = T extends (...args: infer A) => any ? A : never;
 export type ReturnType<T> = T extends (...args: any) => infer R ? R : never;
 export type Promisify<T> = ReturnType<T> extends Promise<any> ? (...args: ArgumentsType<T>) => ReturnType<T> : (...args: ArgumentsType<T>) => Promise<Awaited<ReturnType<T>>>;
@@ -23,5 +24,9 @@ export interface ServerFunctionsOptions<Cache extends boolean = true> {
      * @default true
      */
     cache?: Cache;
+    /**
+     * Fetch options
+     */
+    fetchOptions?: Omit<FetchOptions<"json">, "method" | "body">;
 }
 export declare function createServerFunctions<T>(route: string): <C extends boolean = true>(options?: ServerFunctionsOptions<C>) => C extends false ? CachelessFunctionsClient<T> : CachedFunctionsClient<T>;
